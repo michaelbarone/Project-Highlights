@@ -12,7 +12,15 @@ $imagePart = end($imagePartArray);
 
 $file = $dir.$image;
 
-$type = 'image/'.$imagePart; // or whatsoever
+
+switch($imagePart) {
+	case "tif":
+		$imagePart="tiff";
+		break;
+
+}
+
+$type = 'image/'.$imagePart;
 header('Content-Type:'.$type);
 header('Content-Length: ' . filesize($file));
 $img = file_get_contents($file);

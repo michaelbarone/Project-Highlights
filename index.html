@@ -25,8 +25,11 @@
         <li ng-class="{'active':isCurrentAnimation('fade-in-animation')}"><a ng-click="setCurrentAnimation('fade-in-animation')">FADE</a></li>
     </ul>
 	-->
-	<video ng-show="loaded && video"
-		controls="controls" 
+	<video id="videoPlayer" 
+		ng-show="video"
+		class="fullBg {{currentAnimation}}"
+		autoplay="true" 
+		muted="muted" 
 		name="Video Name" 
 		ng-src="{{videoUrl}}"></video>
 	

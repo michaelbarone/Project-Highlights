@@ -1,8 +1,10 @@
 var app = angular.module('website', ['ngAnimate', 'ui.bootstrap']);
 
 app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
-    var INTERVAL = 10000;
+    var INTERVAL = 4000;
+	var IMAGESBETWEENVIDEOS = 3;
 	var timeout;
+	
 	/*
        var slides = [{id:"image00", src:"./images/image00.jpg"},
         {id:"image01", src:"./images/image01.jpg"},
@@ -22,18 +24,37 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     }
 
     function nextSlide() {
-        $scope.currentIndex = ($scope.currentIndex < $scope.slides.length - 1) ? ++$scope.currentIndex : 0;
-		timeout = $timeout(nextSlide, INTERVAL);
-		
-		/*
-        console.log($scope.currentIndex);
-		console.log(timeout);
-		if($scope.currentIndex==3){
-			console.log("cancel attempt");
-			$timeout.cancel(timeout);
+        console.log($scope.imagesSinceLastVideo);
+		//console.log(timeout);
+		if($scope.imagesSinceLastVideo > IMAGESBETWEENVIDEOS){
+			//$timeout.cancel(timeout);
+			showVideo();
+		} else {
+			$scope.currentIndex = ($scope.currentIndex < $scope.slides.length - 1) ? ++$scope.currentIndex : 0;
+			timeout = $timeout(nextSlide, INTERVAL);
+			$scope.imagesSinceLastVideo++;
 		}
-		*/
     }
+	
+	function showVideo() {
+		$scope.currentVideo = ($scope.currentVideo < $scope.videos.length - 1) ? ++$scope.currentVideo : 0;
+		console.log("Playing Video");
+		$scope.imagesSinceLastVideo = 0;
+		$scope.videoUrl = $scope.videos[$scope.currentVideo].src;
+		$timeout(function () {
+		  $scope.video = true;
+		}, 500);
+		
+		
+	}
+	
+	$('#videoPlayer').on('ended', function(){
+		console.log("video completed");
+		$scope.video = false;
+		$scope.videoUrl = "";
+		timeout = $timeout(nextSlide, 1000);
+	});	
+	
 
     function setCurrentAnimation(animation) {
         $scope.currentAnimation = animation;
@@ -73,13 +94,13 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		}).then(function successCallback(response) {
 			// RESPONSE CONTAINS YOUR FILE LIST
 			angular.forEach(response.data, function (value, key) {
-				videos = videos.concat({id:value.split('.')[0], src:"./data/serveVideos.php?videos="+value});
+				videos = videos.concat({id:value.split('.')[0], src:"./data/serveVideo.php?video="+value});
 			});
-			console.log(videos);
+			//console.log(videos);
 			$scope.videos = videos;
 		}, function errorCallback(response) {
 			// ERROR CASE
-			console.log("error on loadSlides");
+			console.log("error on loadVideos");
 		});		
     }
 
@@ -94,7 +115,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
         $scope.$apply(function(){
             $scope.slides = slides;
             $scope.loaded = true;
-
+			$scope.imagesSinceLastVideo = 0
             $timeout(nextSlide, INTERVAL);
         });
     });
@@ -102,8 +123,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     $scope.progress = 0;
     $scope.loaded = false;
 	$scope.video = false;
-	$scope.imgagesBetweenVideos = 10;
 	$scope.imagesSinceLastVideo = 0;
+	$scope.currentVideo = 0;
     $scope.currentIndex = 0;
     $scope.currentAnimation = 'slide-left-animation';
 
