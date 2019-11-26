@@ -32,10 +32,21 @@ body {
     background-color: rgba(255, 255, 255, 0.50);
 }
 .progress {
-    margin-top: 10%;
+    margin-top: 5px;
 	background-color: rgb(122,122,122);
+}
+
+.progress span {
+	padding: 0 5px;
 }
 
 .progress-bar {
 	color: black !important;
+}
+
+#ProjectInfo {
+	background-color: rgba(88,88,88,0.4);
+    color: #eee;
+    padding: 5px;
+	text-align: center;
 }

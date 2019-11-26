@@ -60,8 +60,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		//console.log("video completed");
 		$scope.video = false;
 		$scope.videoUrl = "";
-		timeout = $timeout(nextSlide, 1000);
-	});	
+		timeout = $timeout(nextSlide, 100);
+	});
 	
 
     function setCurrentAnimation(animation) {
@@ -84,8 +84,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		  url: './app.json'
 		}).then(function successCallback(response) {
 			// RESPONSE CONTAINS YOUR FILE LIST
-			console.log("local version");
-			console.log(response.data);
+			//console.log("local version");
+			//console.log(response.data);
 			releaseLocal = response.data.currentRelease;
 			
 			// get network version
@@ -94,8 +94,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 			  url: './data/getVersion.php'
 			}).then(function successCallback(response) {
 				// RESPONSE CONTAINS YOUR FILE LIST
-				console.log("network version");
-				console.log(response.data);
+				//console.log("network version");
+				//console.log(response.data);
 				releaseNetwork = response.data.currentRelease;
 				
 				
@@ -107,7 +107,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 					// script needs to reload page after copy is completed
 					
 				} else {
-					console.log("local version up to date");
+					//console.log("local version up to date");
 				
 				}
 				
@@ -130,7 +130,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 	}
 
     function loadSlides() {
-		
+		var fileValue = "";
+		var fileValueExplode = [];
 		var slides = [];
 		// load slides
 		$http({
@@ -139,7 +140,10 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		}).then(function successCallback(response) {
 			// RESPONSE CONTAINS YOUR FILE LIST
 			angular.forEach(response.data, function (value, key) {
-				slides = slides.concat({id:value.split('.')[0], src:"./data/serveImage.php?image="+value});
+				fileValueExplode = value.split('.');
+				fileValue = fileValueExplode.pop();
+				fileValue = fileValueExplode.join();
+				slides = slides.concat({id:fileValue, src:"./data/serveImage.php?image="+value});
 			});
 			//console.log(slides);
 			QueueService.loadManifest(slides);
@@ -150,7 +154,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     }
 
     function loadVideos() {
-		
+		var fileValue = "";
+		var fileValueExplode = [];
 		var videos = [];
 		// load videos
 		$http({
@@ -159,7 +164,10 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		}).then(function successCallback(response) {
 			// RESPONSE CONTAINS YOUR FILE LIST
 			angular.forEach(response.data, function (value, key) {
-				videos = videos.concat({id:value.split('.')[0], src:"./data/serveVideo.php?video="+value});
+				fileValueExplode = value.split('.');
+				fileValue = fileValueExplode.pop();
+				fileValue = fileValueExplode.join();				
+				videos = videos.concat({id:fileValue, src:"./data/serveVideo.php?video="+value});
 			});
 			//console.log(videos);
 			$scope.videos = videos;
@@ -192,7 +200,9 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 	$scope.currentVideoIndex = 0;
     $scope.currentImageIndex = 0;
 	$scope.slidesSinceLastVersionCheck = 0;
-    $scope.currentAnimation = 'slide-left-animation';
+    //$scope.currentAnimation = 'slide-left-animation';
+    //$scope.currentAnimation = 'slide-down-animation';
+    $scope.currentAnimation = 'fade-in-animation';
 
     $scope.setCurrentSlideIndex = setCurrentSlideIndex;
     $scope.isCurrentSlideIndex = isCurrentSlideIndex;
@@ -249,11 +259,11 @@ app.animation('.slide-down-animation', function ($window) {
 app.animation('.fade-in-animation', function ($window) {
     return {
         enter: function (element, done) {
-            TweenMax.fromTo(element, 1, { opacity: 0}, {opacity: 1, onComplete: done});
+            TweenMax.fromTo(element, 2, { opacity: 0}, {opacity: 1, onComplete: done});
         },
 
         leave: function (element, done) {
-            TweenMax.to(element, 1, {opacity: 0, onComplete: done});
+            TweenMax.to(element, 2, {opacity: 0, onComplete: done});
         }
     };
 });
@@ -299,3 +309,14 @@ app.directive('bgImage', function ($window, $timeout) {
     }
 });
 
+app.filter('projectDisplay', function() {
+	return function(input){
+		if(input==undefined){ return; }
+		var output = "";
+		var inputExplode = input.split("_");
+		output = inputExplode[0] + " - " + inputExplode[1].substring(0,4);
+		inputExplode.splice(0, 2);
+		output = output + ": " + inputExplode.join().replace(/,/g," ");
+		return output;
+	}
+});

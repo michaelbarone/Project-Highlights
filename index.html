@@ -9,13 +9,16 @@
 </head>
 
 <body ng-controller="MainCtrl">
-	<img bg-image class="fullBg" src="./images/2018_10_cs_edit_desktop_photo_public.jpg">	
+	<img ng-hide="loaded"  
+		bg-image 
+		class="fullBg" 
+		src="./images/2018_10_cs_edit_desktop_photo_public.jpg" />	
     <div class="col-xs-12" ng-if="progress !== 100">
         <progressbar class="progress-striped" value="progress">Loading: {{progress | number:0}}%</progressbar>
     </div>
 	
 	<img ng-show="loaded" bg-image class="fullBg {{currentAnimation}}" ng-repeat="slide in slides"
-         ng-if="isCurrentSlideIndex($index)"
+         ng-if="!video && isCurrentSlideIndex($index)"
          ng-src="{{slide.src}}">
 
 	<!--
@@ -31,7 +34,19 @@
 		autoplay="true" 
 		muted="muted" 
 		name="Video Name" 
-		ng-src="{{videoUrl}}"></video>
+		ng-src="{{videoUrl}}">
+	</video>
+
+
+	<div id="ProjectInfo" ng-show="loaded" class="col-xs-12">
+		<span ng-hide="video">
+			{{slides[currentImageIndex].id | projectDisplay}}
+		</span>
+		<span ng-hide="!video">
+			{{videos[currentVideoIndex].id | projectDisplay}}
+		</span>	
+	</div>
+
 	
     <script src="libs/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.13.1/TweenMax.min.js"></script>
