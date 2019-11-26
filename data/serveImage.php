@@ -10,18 +10,23 @@ $imagePart = end($imagePartArray);
 //print($imagePart);
 
 
-$file = $dir.$image;
+$file = $dir . $image;
 
 
 switch($imagePart) {
 	case "tif":
 		$imagePart="tiff";
 		break;
+		
+	case "jpeg":
+	case "jpg":
+		$imagePart="jpeg";
+		break;
 
 }
 
-$type = 'image/'.$imagePart;
-header('Content-Type:'.$type);
+$type = 'image/' . $imagePart;
+header('Content-Type:' . $type);
 header('Content-Length: ' . filesize($file));
 $img = file_get_contents($file);
 echo $img;

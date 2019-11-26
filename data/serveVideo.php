@@ -9,10 +9,10 @@ $imagePart = end($imagePartArray);
 //print($imagePart);
 
 
-$file = $dir.$video;
+$file = $dir . $video;
 
-$type = 'video/'.$imagePart; // or whatsoever
-header('Content-Type:'.$type);
+$type = 'video/' . $imagePart; // or whatsoever
+header('Content-Type:' . $type);
 header('Content-Length: ' . filesize($file));
 $img = file_get_contents($file);
 echo $img;

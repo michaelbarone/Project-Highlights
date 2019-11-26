@@ -1,8 +1,10 @@
 var app = angular.module('website', ['ngAnimate', 'ui.bootstrap']);
 
 app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
-    var INTERVAL = 4000;
+    var INTERVAL = 5000;
 	var IMAGESBETWEENVIDEOS = 3;
+	// at 10000 INTERVAL, 360 is 1 check per hour
+	var SLIDESBETWEENVERSIONCHECK = 360;
 	var timeout;
 	
 	/*
@@ -13,43 +15,49 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
         {id:"image04", src:"./images/image04.jpg"}];
 		
 		console.log(slides);
-	*/	
+	*/
+
 
     function setCurrentSlideIndex(index) {
-        $scope.currentIndex = index;
+        $scope.currentImageIndex = index;
     }
 
     function isCurrentSlideIndex(index) {
-        return $scope.currentIndex === index;
+        return $scope.currentImageIndex === index;
     }
 
     function nextSlide() {
-        console.log($scope.imagesSinceLastVideo);
-		//console.log(timeout);
-		if($scope.imagesSinceLastVideo > IMAGESBETWEENVIDEOS){
-			//$timeout.cancel(timeout);
-			showVideo();
+		$scope.slidesSinceLastVersionCheck++;
+		if($scope.slidesSinceLastVersionCheck > SLIDESBETWEENVERSIONCHECK){
+			// run version check
+			// reload content
+			loadContent();
 		} else {
-			$scope.currentIndex = ($scope.currentIndex < $scope.slides.length - 1) ? ++$scope.currentIndex : 0;
-			timeout = $timeout(nextSlide, INTERVAL);
-			$scope.imagesSinceLastVideo++;
+			//console.log($scope.imagesSinceLastVideo);
+			//console.log(timeout);
+			if($scope.imagesSinceLastVideo > IMAGESBETWEENVIDEOS){
+				//$timeout.cancel(timeout);
+				showVideo();
+			} else {
+				$scope.currentImageIndex = ($scope.currentImageIndex < $scope.slides.length - 1) ? ++$scope.currentImageIndex : 0;
+				timeout = $timeout(nextSlide, INTERVAL);
+				$scope.imagesSinceLastVideo++;
+			}
 		}
     }
 	
 	function showVideo() {
-		$scope.currentVideo = ($scope.currentVideo < $scope.videos.length - 1) ? ++$scope.currentVideo : 0;
-		console.log("Playing Video");
+		$scope.currentVideoIndex = ($scope.currentVideoIndex < $scope.videos.length - 1) ? ++$scope.currentVideoIndex : 0;
+		//console.log("Playing Video");
 		$scope.imagesSinceLastVideo = 0;
-		$scope.videoUrl = $scope.videos[$scope.currentVideo].src;
+		$scope.videoUrl = $scope.videos[$scope.currentVideoIndex].src;
 		$timeout(function () {
 		  $scope.video = true;
 		}, 500);
-		
-		
 	}
 	
 	$('#videoPlayer').on('ended', function(){
-		console.log("video completed");
+		//console.log("video completed");
 		$scope.video = false;
 		$scope.videoUrl = "";
 		timeout = $timeout(nextSlide, 1000);
@@ -63,6 +71,63 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     function isCurrentAnimation(animation) {
         return $scope.currentAnimation === animation;
     }
+
+	function loadContent() {
+		var releaseNetwork = {};
+		var releaseLocal = {};
+		$scope.slidesSinceLastVersionCheck = 0;
+		// check app versiona and reload if needed
+
+		
+		$http({
+		  method: 'GET',
+		  url: './app.json'
+		}).then(function successCallback(response) {
+			// RESPONSE CONTAINS YOUR FILE LIST
+			console.log("local version");
+			console.log(response.data);
+			releaseLocal = response.data.currentRelease;
+			
+			// get network version
+			$http({
+			  method: 'GET',
+			  url: './data/getVersion.php'
+			}).then(function successCallback(response) {
+				// RESPONSE CONTAINS YOUR FILE LIST
+				console.log("network version");
+				console.log(response.data);
+				releaseNetwork = response.data.currentRelease;
+				
+				
+				// compare versions and update if needed
+				if(releaseLocal.version != releaseNetwork.version) {
+					console.log("versions are different, need to update local");
+					
+					// run update script to overwrite local files
+					// script needs to reload page after copy is completed
+					
+				} else {
+					console.log("local version up to date");
+				
+				}
+				
+				
+			}, function errorCallback(response) {
+				// ERROR CASE
+				console.log("error on loadNetworkVersion");
+			});
+			
+		}, function errorCallback(response) {
+			// ERROR CASE
+			console.log("error on loadLocalVersion");
+		});
+		
+	
+		
+		//if app uptodate then load content
+		loadSlides();
+		loadVideos();
+	}
 
     function loadSlides() {
 		
@@ -124,8 +189,9 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     $scope.loaded = false;
 	$scope.video = false;
 	$scope.imagesSinceLastVideo = 0;
-	$scope.currentVideo = 0;
-    $scope.currentIndex = 0;
+	$scope.currentVideoIndex = 0;
+    $scope.currentImageIndex = 0;
+	$scope.slidesSinceLastVersionCheck = 0;
     $scope.currentAnimation = 'slide-left-animation';
 
     $scope.setCurrentSlideIndex = setCurrentSlideIndex;
@@ -133,8 +199,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     $scope.setCurrentAnimation = setCurrentAnimation;
     $scope.isCurrentAnimation = isCurrentAnimation;
 
-    loadSlides();
-	loadVideos();
+	loadContent();
 });
 
 app.factory('QueueService', function($rootScope){
@@ -223,6 +288,10 @@ app.directive('bgImage', function ($window, $timeout) {
 
         var windowElement = angular.element($window);
         windowElement.resize(resizeBG);
+
+		angular.element(document).ready(function () {
+			resizeBG();
+		});
 
         element.bind('load', function () {
             resizeBG();
