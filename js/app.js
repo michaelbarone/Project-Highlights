@@ -189,6 +189,9 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
             $scope.slides = slides;
             $scope.loaded = true;
 			$scope.imagesSinceLastVideo = 0
+			//get random start point in $scope.slides
+			$scope.currentImageIndex = Math.floor(Math.random() * ($scope.slides.length));
+			//console.log($scope.currentImageIndex);
             $timeout(nextSlide, INTERVAL);
         });
     });
@@ -314,7 +317,7 @@ app.filter('projectDisplay', function() {
 		if(input==undefined){ return; }
 		var output = "";
 		var inputExplode = input.split("_");
-		output = inputExplode[0] + " - " + inputExplode[1].substring(0,4);
+		output = inputExplode[0].replace(/-/g," ") + " - " + inputExplode[1].substring(0,4);
 		inputExplode.splice(0, 2);
 		output = output + ": " + inputExplode.join().replace(/,/g," ");
 		return output;
