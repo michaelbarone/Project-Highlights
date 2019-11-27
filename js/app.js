@@ -40,8 +40,8 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 				showVideo();
 			} else {
 				$scope.currentImageIndex = ($scope.currentImageIndex < $scope.slides.length - 1) ? ++$scope.currentImageIndex : 0;
-				timeout = $timeout(nextSlide, INTERVAL);
 				$scope.imagesSinceLastVideo++;
+				timeout = $timeout(nextSlide, INTERVAL);
 			}
 		}
     }
@@ -50,17 +50,26 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		$scope.currentVideoIndex = ($scope.currentVideoIndex < $scope.videos.length - 1) ? ++$scope.currentVideoIndex : 0;
 		//console.log("Playing Video");
 		$scope.imagesSinceLastVideo = 0;
-		$scope.videoUrl = $scope.videos[$scope.currentVideoIndex].src;
-		$timeout(function () {
-		  $scope.video = true;
-		}, 500);
+		if($scope.videos[$scope.currentVideoIndex].src){
+			$scope.video = true;
+			$timeout(function () {
+				$scope.videoUrl = $scope.videos[$scope.currentVideoIndex].src;
+			}, 1000);
+		}else{
+			closeVideo();
+		}
+	}
+	
+	function closeVideo(){
+		$scope.video = false;
+		$scope.videoUrl = "";
+		$timeout.cancel(timeout);
+		timeout = $timeout(nextSlide, 100);		
 	}
 	
 	$('#videoPlayer').on('ended', function(){
 		//console.log("video completed");
-		$scope.video = false;
-		$scope.videoUrl = "";
-		timeout = $timeout(nextSlide, 100);
+		closeVideo();
 	});
 	
 

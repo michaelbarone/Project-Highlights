@@ -49,4 +49,14 @@ body {
     color: #eee;
     padding: 5px;
 	text-align: center;
+	position: fixed;
+	top: 0;
+	font-size: xx-large;
+}
+
+video {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

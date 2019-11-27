@@ -30,11 +30,13 @@
 	-->
 	<video id="videoPlayer" 
 		ng-show="video"
-		class="fullBg {{currentAnimation}}"
+		height="100%"
+		width="100%"
+		class="{{currentAnimation}}"
 		autoplay="true" 
 		muted="muted" 
 		name="Video Name" 
-		ng-src="{{videoUrl}}">
+		src="{{videoUrl}}">
 	</video>
 
 
