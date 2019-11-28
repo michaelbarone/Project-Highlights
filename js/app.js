@@ -26,6 +26,14 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
         return $scope.currentImageIndex === index;
     }
 
+	$scope.$watch('currentImageIndex', function(newValue, oldValue) {
+		//console.log(newValue);
+		$scope.hideProjectInfo = true;
+		$timeout(function () {
+			$scope.hideProjectInfo = false;
+		}, 1000);
+	});
+
     function nextSlide() {
 		$scope.slidesSinceLastVersionCheck++;
 		if($scope.slidesSinceLastVersionCheck > SLIDESBETWEENVERSIONCHECK){
@@ -208,6 +216,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     $scope.progress = 0;
     $scope.loaded = false;
 	$scope.video = false;
+	$scope.hideProjectInfo = false;
 	$scope.imagesSinceLastVideo = 0;
 	$scope.currentVideoIndex = 0;
     $scope.currentImageIndex = 0;
@@ -282,6 +291,43 @@ app.animation('.fade-in-animation', function ($window) {
 
 app.directive('bgImage', function ($window, $timeout) {
     return function (scope, element, attrs) {
+		
+		//get image height and width, compare against window.innerH/W.
+		//set either height or width of element to corresponding window.innerH/W
+		
+		
+		var resizeBG = function () {
+            var bgwidth = element.width();
+            var bgheight = element.height();
+			var aspect = "horizontal";
+			
+			if(bgwidth < bgheight){
+				aspect = "vertical"
+			}
+
+            var winwidth = $window.innerWidth;
+            var winheight = $window.innerHeight;		
+		
+            var widthratio = winwidth / bgwidth;
+            var heightratio = winheight / bgheight;
+
+            var widthdiff = heightratio * bgwidth;
+            var heightdiff = widthratio * bgheight;
+
+            if (heightdiff > winheight) {
+                element.css({
+                    width: 'auto',
+                    height: heightdiff + 'px'
+                });
+            } else {
+                element.css({
+                    width: widthdiff + 'px',
+                    height: 'auto'
+                });
+            }		
+		};
+		
+		/*
         var resizeBG = function () {
             var bgwidth = element.width();
             var bgheight = element.height();
@@ -307,6 +353,7 @@ app.directive('bgImage', function ($window, $timeout) {
                 });
             }
         };
+		*/
 
         var windowElement = angular.element($window);
         windowElement.resize(resizeBG);
