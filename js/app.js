@@ -284,7 +284,7 @@ app.animation('.fade-in-animation', function ($window) {
         },
 
         leave: function (element, done) {
-            TweenMax.to(element, 2, {opacity: 0, onComplete: done});
+            TweenMax.to(element, 1, {opacity: 0, onComplete: done});
         }
     };
 });

@@ -65,9 +65,24 @@ body {
 	min-height: 55.5px;
 }
 
+#ProjectInfo span {
+	position:absolute;
+	text-align:center;
+	width:100%;
+	left: 0;
+}
+
 video {
     left: 50%;
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+
+#webpageRefresh {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	height: 50px;
+	width: 50px;
 }
