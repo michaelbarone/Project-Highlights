@@ -12,7 +12,6 @@
 	<img ng-hide="loaded"  
 		width="100%" 
 		height="100%" 
-		class="1fullBg"
 		style="position:absolute;"
 		src="./images/2018_10_cs_edit_desktop_photo_public.jpg" />	
     <div class="col-xs-12" ng-if="progress !== 100">
@@ -23,7 +22,7 @@
          ng-if="!video && isCurrentSlideIndex($index)"
          ng-src="{{slide.src}}" />
 
-	<video id="videoPlayer" 
+	<video ng-cloak id="videoPlayer" 
 		ng-show="video"
 		height="100%"
 		width="100%"
@@ -31,17 +30,17 @@
 		autoplay="true" 
 		muted="muted" 
 		name="Video Name" 
-		src="{{videoUrl}}">
+		ng-src="{{videoUrl}}">
 	</video>
 
 
 	<div ng-cloak id="ProjectInfo" ng-show="loaded" class="col-xs-12">
-		<div ng-show="video == false">
+		<div ng-if="video == false" class="{{currentAnimation}}">
 			<span ng-repeat="slide in slides" class="{{currentAnimation}}" ng-if="currentImageIndex == $index">
 				{{slide.id | projectDisplay}}
 			</span>
 		</div>
-		<div ng-show="video == true">
+		<div ng-if="video == true" class="{{currentAnimation}}">
 			<span ng-repeat="video in videos" class="{{currentAnimation}}" ng-if="currentVideoIndex == $index">
 				{{video.id | projectDisplay}}
 			</span>

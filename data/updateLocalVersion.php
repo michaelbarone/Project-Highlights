@@ -1,11 +1,12 @@
 <?php
 $dir = "\\\\sacfiles1\\shared\\aa\\cs\\Systems\\web\\Project-Highlights";
 
+/*
 $json = file_get_contents($dir . "\app.json");
 echo $json;
+*/
 
 
-/*
 function custom_copy($src, $dst) {  
   
     // open the source directory 
@@ -32,14 +33,30 @@ function custom_copy($src, $dst) {
         }  
     }  
   
-    closedir($dir); 
-}  
+    closedir($dir);
+}
   
-$src = "C:/xampp/htdocs/geeks"; 
-  
-$dst = "C:/xampp/htdocs/gfg"; 
-  
-custom_copy($src, $dst); 
-*/
+$src = $dir; 
 
+$dst = dirname(__FILE__);
+$array = explode("\\",$dst);
+array_pop($array);
+$dst = implode($array,"\\");
+
+  
+//$dst = "C:/xampp/htdocs/gfg"; 
+  
+custom_copy($src, $dst);
+
+echo "Copy Completed";
+
+
+/*
+$url = dirname(__FILE__);
+echo $url;
+$array = explode("\\",$url);
+array_pop($array);
+$url = implode($array,"\\");
+echo $url;
+*/
 ?>
