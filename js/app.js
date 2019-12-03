@@ -1,6 +1,6 @@
 var app = angular.module('website', ['ngAnimate', 'ui.bootstrap']);
 
-app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
+app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, $http) {
     var INTERVAL = 10000;
 	var IMAGESBETWEENVIDEOS = 3;
 	// at 10000 INTERVAL, 360 is 1 check per hour
@@ -107,7 +107,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 		
 		$http({
 		  method: 'GET',
-		  url: './app.json'
+		  url: './app.json?'+Date.now()
 		}).then(function successCallback(response) {
 			// RESPONSE CONTAINS YOUR FILE LIST
 			//console.log("local version");
@@ -127,10 +127,25 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 				
 				// compare versions and update if needed
 				if(releaseLocal.version != releaseNetwork.version) {
+					console.log("Local:"+releaseLocal.version+ " Network:"+releaseNetwork.version);
 					console.log("versions are different, need to update local");
 					
 					// run update script to overwrite local files
 					// script needs to reload page after copy is completed
+					
+					// maybe run 10-15 second timer before refresh, update statusbar on main screen with "updating app" message
+					$scope.progressBarText = "Upgrading Website";
+					
+					var progressCount = 0;
+					var progressInterval = $interval(function(){
+						$scope.progress = progressCount;
+						progressCount++;
+						if(progressCount>100){
+							$interval.cancel(progressInterval);
+							location.href=location.href;
+						}
+					}, 150);
+					
 					
 					$http({
 						method: 'GET',
@@ -138,9 +153,9 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
 					}).then(function successCallback(response) {
 						// RESPONSE CONTAINS YOUR FILE LIST
 						console.log("local version updated..  refreshing");
-						$timeout(function () {
-							location.href=location.href;
-						}, 2000);
+						//$timeout(function () {
+						//	location.href=location.href;
+						//}, 2000);
 
 					}, function errorCallback(response) {
 						// ERROR CASE
@@ -240,6 +255,7 @@ app.controller('MainCtrl', function ($scope, $timeout, QueueService, $http) {
     });
 
     $scope.progress = 0;
+	$scope.progressBarText = "Loading";
     $scope.loaded = false;
 	$scope.video = false;
 	$scope.hideProjectInfo = false;

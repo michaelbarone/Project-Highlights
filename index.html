@@ -15,7 +15,7 @@
 		style="position:absolute;"
 		src="./images/2018_10_cs_edit_desktop_photo_public.jpg" />	
     <div class="col-xs-12" ng-if="progress !== 100">
-        <progressbar class="progress-striped" value="progress">Loading: {{progress | number:0}}%</progressbar>
+        <progressbar class="progress-striped" value="progress">{{progressBarText}}: {{progress | number:0}}%</progressbar>
     </div>
 	
 	<img ng-show="loaded" bg-image class="fullBg {{currentAnimation}}" ng-repeat="slide in slides"
