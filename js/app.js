@@ -199,9 +199,11 @@ app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, 
 			// RESPONSE CONTAINS YOUR FILE LIST
 			angular.forEach(response.data, function (value, key) {
 				fileValueExplode = value.split('.');
-				fileValue = fileValueExplode.pop();
+				var fileExt = fileValueExplode.pop();
 				fileValue = fileValueExplode.join();
-				slides = slides.concat({id:fileValue, src:"./data/serveImage.php?image="+value});
+				if(['JPEG','jpeg','JPG','jpg','PNG','png'].indexOf(fileExt) >= 0){
+					slides = slides.concat({id:fileValue, src:"./data/serveImage.php?image="+value});
+				}
 			});
 			//console.log(slides);
 			QueueService.loadManifest(slides);
@@ -223,9 +225,11 @@ app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, 
 			// RESPONSE CONTAINS YOUR FILE LIST
 			angular.forEach(response.data, function (value, key) {
 				fileValueExplode = value.split('.');
-				fileValue = fileValueExplode.pop();
-				fileValue = fileValueExplode.join();				
-				videos = videos.concat({id:fileValue, src:"./data/serveVideo.php?video="+value});
+				var fileExt = fileValueExplode.pop();
+				fileValue = fileValueExplode.join();
+				if(['mp4','MP4'].indexOf(fileExt) >= 0){				
+					videos = videos.concat({id:fileValue, src:"./data/serveVideo.php?video="+value});
+				}
 			});
 			//console.log(videos);
 			$scope.videos = videos;
