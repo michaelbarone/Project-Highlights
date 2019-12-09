@@ -2,7 +2,8 @@ var app = angular.module('website', ['ngAnimate', 'ui.bootstrap']);
 
 app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, $http) {
     var INTERVAL = 10000;
-	var IMAGESBETWEENVIDEOS = 3;
+	// random value 3 through 5
+	var IMAGESBETWEENVIDEOS = Math.floor(Math.random() * 3) + 3;
 	// at 10000 INTERVAL, 360 is 1 check per hour
 	var SLIDESBETWEENVERSIONCHECK = 360;
 	var timeout;
@@ -68,9 +69,22 @@ app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, 
 				$scope.videoUrl = $scope.videos[$scope.currentVideoIndex].src;
 			}, 1000);
 			$timeout(function () {
+				// check if video is paused, and play
+				//console.log(document.getElementById('videoPlayer').paused);
+				if (document.getElementById('videoPlayer').paused){
+					document.getElementById('videoPlayer').play();
+				}
+				
+				
 				//advance currentImage for next frame after video
 				$scope.currentImageIndex = ($scope.currentImageIndex < $scope.slides.length - 1) ? ++$scope.currentImageIndex : 0;
 			}, 5000);
+			$timeout(function () {
+				// auto close video if video does not load/play properly after 61 seconds
+				if($scope.video == true){
+					closeVideo();
+				}
+			}, 61000);
 		} else {
 			closeVideo();
 		}
