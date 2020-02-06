@@ -3,7 +3,10 @@
 
 $image = $_GET['image'];
 
-$dir = "\\\\sacfiles1\\shared\\aa\\cs\\Resolved\\00 Project Hightlights\\Images\\";
+require './pathConstants.php';
+
+$dir = $images . "\\";
+
 
 $imagePartArray = explode(".", $image);
 $imagePart = end($imagePartArray);

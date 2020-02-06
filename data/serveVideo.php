@@ -2,7 +2,10 @@
 
 $video = $_GET['video'];
 
-$dir = "\\\\sacfiles1\\shared\\aa\\cs\\Resolved\\00 Project Hightlights\\Video\\";
+require './pathConstants.php';
+
+$dir = $video . "\\";
+
 
 $imagePartArray = explode(".", $video);
 $imagePart = end($imagePartArray);

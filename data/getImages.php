@@ -1,5 +1,9 @@
 <?php
-$dir = "\\\\sacfiles1\\shared\\aa\\cs\\Resolved\\00 Project Hightlights\\Images";
+require './pathConstants.php';
+
+$dir = $images;
+
+
 $return_array = array();
 if(is_dir($dir)){
     if($dh = opendir($dir)){

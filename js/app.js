@@ -1,7 +1,8 @@
 var app = angular.module('website', ['ngAnimate', 'ui.bootstrap']);
 
 app.controller('MainCtrl', function ($scope, $timeout, $interval, QueueService, $http) {
-    var INTERVAL = 10000;
+    //var INTERVAL = 10000;
+    var INTERVAL = 20000;
 	// random value 3 through 5
 	var IMAGESBETWEENVIDEOS = Math.floor(Math.random() * 3) + 3;
 	// at 10000 INTERVAL, 360 is 1 check per hour
